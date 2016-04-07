@@ -1,0 +1,5 @@
+#
+#Thu Apr 07 21:14:22 CEST 2016
+com.intel.core.target.selection="Korklos"
+com.intel.core.project.type.id="com.intel.iotdevkit.cdt.iotCDTNature"
+com.intel.core.project.description="IoT"
