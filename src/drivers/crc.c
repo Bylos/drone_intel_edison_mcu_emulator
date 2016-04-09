@@ -11,7 +11,7 @@ unsigned char crcTable[256];
 
 void crc_init(void) {
 	unsigned char remainder;
-	int dividend;
+	unsigned short dividend;
 	printf("CRC: Building CRC LUT...\t");
 	for (dividend = 0; dividend < 256; ++dividend) {
 		remainder = dividend;
@@ -31,7 +31,7 @@ void crc_init(void) {
 unsigned char crc_fast(unsigned char const message[], int nBytes) {
 	unsigned char data;
 	unsigned char remainder = 0;
-	int byte;
+	unsigned short byte;
 	for (byte = 0; byte < nBytes; ++byte) {
 		data = message[byte] ^ remainder;
 		remainder = crcTable[data] ^ (remainder << 8);
