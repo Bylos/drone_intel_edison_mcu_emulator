@@ -145,9 +145,10 @@ unsigned short xbee_read_frame(void) {
 			printf("XBEE ZB: RX CRC\n");
 			int j;
 			for (j=0; j<n; j++) {
-				printf("%x ", buffer[j]);
+				printf("%02x ", buffer[j]);
 			}
 			printf("\n");
+			printf("Instead of %02x\n", crc_fast(buffer_ptr, length));
 			rc_channel = 0;
 		}
 	} else {
