@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <launchConfiguration type="org.eclipse.cdt.launch.remoteApplicationLaunchType">
-<stringAttribute key="com.intel.core.launch.launched_target" value="Korklos"/>
+<stringAttribute key="com.intel.core.launch.launched_target" value="Korklos Wifi Kork Home"/>
 <stringAttribute key="com.intel.iotdevkit.launch.config.default" value="drone_intel_edison_mcu_emulator"/>
 <booleanAttribute key="org.eclipse.cdt.dsf.gdb.AUTO_SOLIB" value="true"/>
 <listAttribute key="org.eclipse.cdt.dsf.gdb.AUTO_SOLIB_LIST"/>
 <stringAttribute key="org.eclipse.cdt.dsf.gdb.DEBUG_NAME" value="i586-poky-linux-gdb"/>
 <booleanAttribute key="org.eclipse.cdt.dsf.gdb.DEBUG_ON_FORK" value="false"/>
 <stringAttribute key="org.eclipse.cdt.dsf.gdb.GDB_INIT" value="C:\Edison\development\iss-iot-win\issiot\issiot-debugger\.gdbinit"/>
-<stringAttribute key="org.eclipse.cdt.dsf.gdb.HOST" value="Korklos"/>
+<stringAttribute key="org.eclipse.cdt.dsf.gdb.HOST" value="Korklos Wifi Kork Home"/>
 <booleanAttribute key="org.eclipse.cdt.dsf.gdb.NON_STOP" value="false"/>
 <stringAttribute key="org.eclipse.cdt.dsf.gdb.PORT" value="2345"/>
 <booleanAttribute key="org.eclipse.cdt.dsf.gdb.REMOTE_TCP" value="true"/>
@@ -38,7 +38,7 @@
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
 <listEntry value="4"/>
 </listAttribute>
-<stringAttribute key="org.eclipse.debug.core.REMOTE_TCP" value="Korklos"/>
+<stringAttribute key="org.eclipse.debug.core.REMOTE_TCP" value="Korklos Wifi Kork Home"/>
 <listAttribute key="org.eclipse.debug.ui.favoriteGroups">
 <listEntry value="org.eclipse.debug.ui.launchGroup.debug"/>
 <listEntry value="org.eclipse.debug.ui.launchGroup.run"/>
