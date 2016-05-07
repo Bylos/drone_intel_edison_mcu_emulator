@@ -1,5 +1,5 @@
 #
-#Tue Apr 12 18:56:58 CEST 2016
+#Fri May 06 19:04:16 CEST 2016
 com.intel.core.project.type.id="com.intel.iotdevkit.cdt.iotCDTNature"
-com.intel.core.target.selection="Korklos Wifi Kork Home"
+com.intel.core.target.selection="Korklos Wifi Bylos Home"
 com.intel.core.project.description="IoT"
