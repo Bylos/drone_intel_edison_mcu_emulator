@@ -8,7 +8,7 @@
 unsigned long time_ms(unsigned char reset) {
 	static struct timespec time;
 	static unsigned long reset_time;
-	clock_gettime(CLOCK_REALTIME, &time);
+	clock_gettime(CLOCK_MONOTONIC_RAW, &time);
 	if (reset) {
 		reset_time = time.tv_sec*1000 + time.tv_nsec*0.000001;
 		return 0;
