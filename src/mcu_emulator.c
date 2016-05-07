@@ -2,7 +2,7 @@
 #include "mcu_main.h"
 #include "drivers.h"
 #include "modes.h"
-
+#include "debug.h"
 
 
 unsigned long time_ms(unsigned char reset) {
@@ -70,7 +70,7 @@ char MCU_Get_Controller_Data(const unsigned long timer) {
 	}
 	if (timer - mcu_controller_timer >= CONTROLLER_TIMEOUT) {
 		mcu_controller_timer = timer;
-		printf("Controller RX Timeout\n");
+		debug_print((float)timer*0.001, WARNING, "Controller RX Timeout");
 		return -1;
 	}
 	return 0;
@@ -90,22 +90,24 @@ char MCU_Get_Processor_Data(const unsigned long timer) {
 	}
 	if (timer - mcu_cpu_timer >= CPU_TIMEOUT) {
 		mcu_cpu_timer = timer;
-		printf("CPU communication Timeout\n");
+		debug_print((float)timer*0.001, WARNING, "CPU Communication Timeout");
 		return -1;
 	}
 	return 0;
 }
 
 int main() {
-	printf("\n\n *** MCU Application Starts ***\n\n");
-
 	/* Execution time (ms) */
 	unsigned long cur_time = time_ms(1);
-
-	mraa_result_print(mraa_init());
-	printf("\nMRAA library version %s\n", mraa_get_version());
-	printf("on platform %s\n", mraa_get_platform_name());
-	printf("Platform has %d pins available\n", mraa_get_pin_count());
+	debug_print(0.0, EMPTY, "");
+	debug_print(0.0, EMPTY, "");
+	debug_print(0.0, EMPTY, "");
+	debug_print(0.0, EMPTY, "");
+	char buff[20];
+	time_t now = time(NULL);
+	strftime(buff, 20, "%Y-%m-%d %H:%M:%S", localtime(&now));
+	debug_print(0.0, EMPTY, buff);
+	debug_print((float)cur_time*0.001, INFO, "MCU Application Starts");
 
 	crc_init();
 	lsm_init();
@@ -113,7 +115,9 @@ int main() {
 	xbee_init();
 	cpu_init();
 
-	printf("\nEnd of initialization %d ms\n\n", (unsigned int)(time_ms(0) - cur_time));
+	unsigned long old_time = cur_time;
+	cur_time = time_ms(0);
+	debug_print((float)(cur_time - old_time)*0.001, INFO, "MCU Application Initialized");
 
 	/* CPU Mode Status */
 	cpu_state_t cpu_state = CPU_DISCONNECTED;
@@ -129,11 +133,15 @@ int main() {
 		nanosleep((const struct timespec[]){{0, 000001000L}}, NULL);
 		/* Update execution time */
 		cur_time = time_ms(0);
+		if ((cur_time - old_time) > 2000) {
+			debug_print((float)cur_time * 0.001, ERROR, "Timer has jumped more than 2s");
+		}
+		old_time = cur_time;
 
 		/* Debug: log number of frame from peripherals */
 		if (cur_time - debug_timer >= 10000) {
-			printf("time: %d, cpu: %d, xbee: %d, lsm: %d, adv: %d\n",
-					(int)cur_time/1000, cpu_cnt, xbee_cnt, lsm_cnt, adv_cnt);
+			/*printf("time: %d, cpu: %d, xbee: %d, lsm: %d, adv: %d\n",
+					(int)cur_time/1000, cpu_cnt, xbee_cnt, lsm_cnt, adv_cnt);*/
 			cpu_cnt = xbee_cnt = lsm_cnt = adv_cnt = 0;
 			debug_timer = cur_time;
 		}
@@ -148,6 +156,7 @@ int main() {
 		case -1:
 			cpu_state = CPU_DISCONNECTED;
 			if (mcu_mode != MCU_MODE_BOOT && mcu_mode > MCU_MODE_ALEXKIDD) {
+				debug_print((float)cur_time*0.001, MODE, "Require Standby Mode due to CPU Timeout");
 				mcu_next_mode = MCU_MODE_STANDBY;
 			}
 			break;
@@ -156,6 +165,9 @@ int main() {
 			cpu_state = CPU_CONNECTED;
 			if (cpu_get_mode_flag()) {
 				mcu_next_mode = cpu_get_mode_data();
+				if (mcu_next_mode != mcu_mode) {
+					debug_print((float)cur_time*0.001, MODE, "Require New CPU Mode");
+				}
 			}
 			break;
 		}
@@ -166,6 +178,7 @@ int main() {
 			if (cpu_state == CPU_CONNECTED) {
 				cpu_send_command(MCU_MODE_STANDBY);
 			}
+			debug_print((float)cur_time*0.001, MODE, "Require Standby Mode due to Controller Timeout");
 			mcu_next_mode = MCU_MODE_STANDBY;
 			break;
 		case 1:
@@ -173,10 +186,15 @@ int main() {
 			if (xbee_get_command_flag()) {
 				rc_command_t command = xbee_get_command();
 				if (cpu_state == CPU_CONNECTED) {
+					debug_print((float)cur_time*0.001, MODE, "Transmit Controller request to CPU");
 					cpu_send_command(command);
 				}
 				else if (command == RC_COMMAND_UNARM || command == RC_COMMAND_ALEXKIDD) {
+					debug_print((float)cur_time*0.001, MODE, "Require a not connected Mode");
 					mcu_next_mode = command;
+				}
+				else {
+					debug_print((float)cur_time*0.001, MODE, "Request of Armed Mode lost due to CPU unavailable");
 				}
 			}
 			break;
@@ -187,9 +205,11 @@ int main() {
 			mcu_mode = mcu_next_mode;
 			switch (mcu_mode) {
 			case MCU_MODE_STANDBY:
+				debug_print((float)cur_time*0.001, MODE, "Init Standby Mode");
 				Mode_Unarmed_Init();
 				break;
 			case MCU_MODE_ALEXKIDD:
+				debug_print((float)cur_time*0.001, MODE, "Init AlexKidd Mode");
 				Mode_AlexKidd_Init();
 				break;
 			case MCU_MODE_ACCEL_CAL:
@@ -198,6 +218,7 @@ int main() {
 			case MCU_MODE_ALEXKIDD2:
 			case MCU_MODE_ACRO:
 			case MCU_MODE_STABILIZED:
+				debug_print((float)cur_time*0.001, MODE, "Init Armed Mode");
 				Mode_Armed_Init(mcu_mode);
 				break;
 			default:
